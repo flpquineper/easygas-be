@@ -1,0 +1,94 @@
+import { Request, Response } from 'express';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
+const prisma = new PrismaClient();
+const JWT_SECRET = process.env.JWT_SECRET || 'easygas_secret_key';
+
+export async function register(req: Request, res: Response) {
+  const { name, email, password, phone, cpf, address, complementAddress } = req.body;
+
+  try {
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ erro: 'Email já cadastrado.' });
+    }
+
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
+    const newUser = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+        cpf,
+        address,
+        complementAddress
+      }
+    });
+
+    res.status(201).json({ id: newUser.id, name: newUser.name, email: newUser.email });
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao registrar usuário.', detalhes: error });
+  }
+}
+
+export async function login(req: Request, res: Response) {
+  const { email, password } = req.body;
+  const mensaPadrao = 'Email ou senha incorretos.';
+
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user || !user.password) {
+      return res.status(400).json({ erro: mensaPadrao });
+    }
+
+    const senhaValida = bcrypt.compareSync(password, user.password);
+    if (!senhaValida) {
+      return res.status(400).json({ erro: mensaPadrao });
+    }
+
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+
+    res.status(200).json({
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao fazer login.', detalhes: error });
+  }
+}
+
+
+
+// função para fazer a requisição dos dados do usuário logado através do middleware utilizando token JWT
+export async function profile(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user?.id; // vamos puxar do token JWT
+  
+      if (!userId) {
+        return res.status(401).json({ erro: 'Usuário não autenticado.' });
+      }
+  
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, name: true, email: true, phone: true, address: true, complementAddress: true }
+      });
+  
+      if (!user) {
+        return res.status(404).json({ erro: 'Usuário não encontrado.' });
+      }
+  
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ erro: 'Erro ao buscar perfil.', detalhes: error });
+    }
+  }
+  
+

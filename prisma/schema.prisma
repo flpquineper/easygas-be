@@ -1,0 +1,83 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                Int     @id @default(autoincrement())
+  name              String? @db.VarChar(255)
+  email             String? @unique @db.VarChar(255)
+  password          String? @db.VarChar(100)
+  phone             String? @db.VarChar(11)
+  cpf               String? @db.VarChar(11)
+  address           String? @db.VarChar(255)
+  complementAddress String  @db.VarChar(255)
+  carts             Cart[]
+  orders            Order[]
+
+  @@map("users")
+}
+
+
+model Admin {
+  id       Int     @id @default(autoincrement())
+  name     String? @db.VarChar(255)
+  email    String? @unique
+  password String? @db.VarChar(32)
+
+  @@map("admins")
+}
+
+model Product {
+  id    Int    @id @default(autoincrement())
+  name  String @db.VarChar(255)
+  price String @db.VarChar(255)
+  carts Cart[]
+
+  @@map("products")
+}
+
+model Cart {
+  id        Int     @id @default(autoincrement())
+  productId Int
+  userId    Int
+  product   Product @relation(fields: [productId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+  orders    Order[]
+
+  @@map("carts")
+}
+
+model Order {
+  id              Int           @id @default(autoincrement())
+  cartId          Int
+  userId          Int
+  paymentMethodId Int
+  deliveryManId   Int
+  status          Int
+  cart            Cart          @relation(fields: [cartId], references: [id])
+  deliveryMan     DeliveryMan   @relation(fields: [deliveryManId], references: [id])
+  paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+  user            User          @relation(fields: [userId], references: [id])
+
+  @@map("orders")
+}
+
+model PaymentMethod {
+  id      Int     @id @default(autoincrement())
+  payment String  @db.VarChar(32)
+  orders  Order[]
+  @@map("paymentMethods")
+}
+
+model DeliveryMan {
+  id     Int     @id @default(autoincrement())
+  name   String  @db.VarChar(255)
+  orders Order[]
+
+  @@map("deliveryMans")
+}
