@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { Router } from 'express';
 import * as userController from '../controllers/user.controller';
 import bcrypt from 'bcrypt';
-import { authenticateToken } from '../middlewares/auth';
+import { authMiddleware } from '../middlewares/auth';
 
 
 const prisma = new PrismaClient();
@@ -12,7 +12,7 @@ const router = Router();
 router.post('/register', userController.register);
 router.post('/login', userController.login);
 // Rota privada
-router.get('/profile', authenticateToken, userController.profile); // rota privada autenticada com middleware
+router.get('/profile', authMiddleware, userController.profile); // rota privada autenticada com middleware
 
 
 router.get("/", async (req, res) => {

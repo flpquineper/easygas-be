@@ -1,18 +1,25 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'easygas_secret_key';
 
-export async function register(req: Request, res: Response) {
+// Interface para adicionar o campo user ao Request
+interface AuthenticatedRequest extends Request {
+  user?: string | JwtPayload;
+}
+
+// REGISTER
+export const register = async (req: Request, res: Response): Promise<void> => {
   const { name, email, password, phone, cpf, address, complementAddress } = req.body;
 
   try {
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return res.status(400).json({ erro: 'Email já cadastrado.' });
+      res.status(400).json({ erro: 'Email já cadastrado.' });
+      return;
     }
 
     const hashedPassword = bcrypt.hashSync(password, 10);
@@ -33,21 +40,24 @@ export async function register(req: Request, res: Response) {
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao registrar usuário.', detalhes: error });
   }
-}
+};
 
-export async function login(req: Request, res: Response) {
+// LOGIN
+export const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
-  const mensaPadrao = 'Email ou senha incorretos.';
+  const mensagemPadrao = 'Email ou senha incorretos.';
 
   try {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user || !user.password) {
-      return res.status(400).json({ erro: mensaPadrao });
+      res.status(400).json({ erro: mensagemPadrao });
+      return;
     }
 
     const senhaValida = bcrypt.compareSync(password, user.password);
     if (!senhaValida) {
-      return res.status(400).json({ erro: mensaPadrao });
+      res.status(400).json({ erro: mensagemPadrao });
+      return;
     }
 
     const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
@@ -63,32 +73,37 @@ export async function login(req: Request, res: Response) {
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao fazer login.', detalhes: error });
   }
-}
+};
 
+// PROFILE
+export const profile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const userId = (req.user as JwtPayload)?.id;
 
-
-// função para fazer a requisição dos dados do usuário logado através do middleware utilizando token JWT
-export async function profile(req: Request, res: Response) {
-    try {
-      const userId = (req as any).user?.id; // vamos puxar do token JWT
-  
-      if (!userId) {
-        return res.status(401).json({ erro: 'Usuário não autenticado.' });
-      }
-  
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: { id: true, name: true, email: true, phone: true, address: true, complementAddress: true }
-      });
-  
-      if (!user) {
-        return res.status(404).json({ erro: 'Usuário não encontrado.' });
-      }
-  
-      res.status(200).json(user);
-    } catch (error) {
-      res.status(500).json({ erro: 'Erro ao buscar perfil.', detalhes: error });
+    if (!userId) {
+      res.status(401).json({ erro: 'Usuário não autenticado.' });
+      return;
     }
-  }
-  
 
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        address: true,
+        complementAddress: true
+      }
+    });
+
+    if (!user) {
+      res.status(404).json({ erro: 'Usuário não encontrado.' });
+      return;
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao buscar perfil.', detalhes: error });
+  }
+};

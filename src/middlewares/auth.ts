@@ -1,17 +1,24 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
+import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'easygas_secret_key';
 
-export interface AuthenticatedRequest extends Request {
-  user?: string | JwtPayload;
+// Aqui definimos o que será esperado dentro do JWT
+interface JwtPayloadCustom {
+  id: number;
+  email: string;
+  role?: string;
 }
 
-export function authMiddleware(
-  req: AuthenticatedRequest,
+export interface AuthenticatedRequest extends Request {
+  user?: JwtPayloadCustom;
+}
+
+export const authMiddleware: RequestHandler = (
+  req: Request,
   res: Response,
   next: NextFunction
-): void {
+): void => {
   const authHeader = req.headers['authorization'];
   const token = authHeader?.split(' ')[1];
 
@@ -26,7 +33,8 @@ export function authMiddleware(
       return;
     }
 
-    req.user = decoded;
+    // Aqui garantimos que o objeto seja do tipo correto
+    (req as AuthenticatedRequest).user = decoded as JwtPayloadCustom;
     next();
   });
-}
+};
