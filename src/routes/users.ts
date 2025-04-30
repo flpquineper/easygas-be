@@ -8,9 +8,10 @@ import { authenticateToken } from '../middlewares/auth';
 const prisma = new PrismaClient();
 const router = Router();
 
-
+// Rotas públicas
 router.post('/register', userController.register);
 router.post('/login', userController.login);
+// Rota privada
 router.get('/profile', authenticateToken, userController.profile); // rota privada autenticada com middleware
 
 

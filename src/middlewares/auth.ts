@@ -1,25 +1,32 @@
-// src/middlewares/auth.ts
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'easygas_secret_key';
 
-export function authenticateToken(req: Request, res: Response, next: NextFunction) {
+export interface AuthenticatedRequest extends Request {
+  user?: string | JwtPayload;
+}
+
+export function authMiddleware(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): void {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const token = authHeader?.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ erro: 'Token de acesso não fornecido.' });
+    res.status(401).json({ erro: 'Token de acesso não fornecido.' });
+    return;
   }
 
-  jwt.verify(token, JWT_SECRET, (err, userDecoded) => {
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
     if (err) {
-      return res.status(403).json({ erro: 'Token inválido ou expirado.' });
+      res.status(403).json({ erro: 'Token inválido ou expirado.' });
+      return;
     }
 
-    // AQUI adiciona o user no request para o controller acessar depois
-    (req as any).user = userDecoded;
-
+    req.user = decoded;
     next();
   });
 }
