@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { AuthenticatedRequest } from '../middlewares/auth';
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'easygas_secret_key';
@@ -23,53 +24,60 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       data: { name, email, password: hashedPassword }
     });
 
-    res.status(201).json({ id: newAdmin.id, name: newAdmin.name, email: newAdmin.email });
+    res.status(201).json({
+      id: newAdmin.id,
+      name: newAdmin.name,
+      email: newAdmin.email
+    });
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao registrar administrador.', detalhes: error });
   }
 };
 
 export const login = async (req: Request, res: Response): Promise<void> => {
-    const { email, password } = req.body;
-    const mensagemPadrao = 'Email ou senha inválidos.';
-  
-    try {
-      const admin = await prisma.admin.findUnique({ where: { email } });
-  
-      // Verifica se o admin existe e se a senha é válida (e se não é null)
-      if (!admin || typeof admin.password !== 'string' || !bcrypt.compareSync(password, admin.password)) {
-        res.status(400).json({ erro: mensagemPadrao });
-        return;
-      }
-  
-      const token = jwt.sign(
-        { id: admin.id, email: admin.email, role: 'admin' },
-        JWT_SECRET,
-        { expiresIn: '7d' }
-      );
-  
-      res.status(200).json({
-        token,
-        admin: {
-          id: admin.id,
-          name: admin.name,
-          email: admin.email
-        }
-      });
-    } catch (error) {
-      res.status(500).json({ erro: 'Erro ao fazer login de administrador.', detalhes: error });
-    }
-  };
+  const { email, password } = req.body;
+  const mensagemPadrao = 'Email ou senha inválidos.';
 
-export const profile = async (req: Request, res: Response): Promise<void> => {
   try {
-    const adminId = (req as any).user?.id;
+    const admin = await prisma.admin.findUnique({ where: { email } });
 
-    if (!adminId) {
-      res.status(401).json({ erro: 'Administrador não autenticado.' });
+    if (!admin || typeof admin.password !== 'string' || !bcrypt.compareSync(password, admin.password)) {
+      res.status(400).json({ erro: mensagemPadrao });
       return;
     }
 
+    const token = jwt.sign(
+      {
+        id: admin.id,
+        email: admin.email,
+        role: 'admin'
+      },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.status(200).json({
+      token,
+      admin: {
+        id: admin.id,
+        name: admin.name,
+        email: admin.email
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao fazer login de administrador.', detalhes: error });
+  }
+};
+
+export const profile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  const adminId = req.user?.id;
+
+  if (!adminId) {
+    res.status(401).json({ erro: 'Administrador não autenticado.' });
+    return;
+  }
+
+  try {
     const admin = await prisma.admin.findUnique({
       where: { id: adminId },
       select: { id: true, name: true, email: true }
@@ -86,8 +94,8 @@ export const profile = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const update = async (req: Request, res: Response): Promise<void> => {
-  const adminId = (req as any).user?.id;
+export const update = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  const adminId = req.user?.id;
   const { name, email } = req.body;
 
   try {
@@ -102,8 +110,8 @@ export const update = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const remove = async (req: Request, res: Response): Promise<void> => {
-  const adminId = (req as any).user?.id;
+export const remove = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  const adminId = req.user?.id;
 
   try {
     await prisma.admin.delete({ where: { id: adminId } });

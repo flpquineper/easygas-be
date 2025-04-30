@@ -18,7 +18,7 @@ CREATE TABLE `admins` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NULL,
     `email` VARCHAR(191) NULL,
-    `password` VARCHAR(32) NULL,
+    `password` VARCHAR(255) NULL,
 
     UNIQUE INDEX `admins_email_key`(`email`),
     PRIMARY KEY (`id`)
