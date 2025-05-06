@@ -38,6 +38,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     res.status(201).json({ id: newUser.id, name: newUser.name, email: newUser.email });
   } catch (error) {
+    console.error(error); 
     res.status(500).json({ erro: 'Erro ao registrar usuário.', detalhes: error });
   }
 };
