@@ -135,7 +135,7 @@ model PaymentMethod {
 model DeliveryMan {
   id       Int     @id @default(autoincrement())
   name     String? @db.VarChar(255)
-  email    String? @db.VarChar(255)
+  email    String? @unique @db.VarChar(255)
   password String? @db.VarChar(255)
   orders   Order[]
 

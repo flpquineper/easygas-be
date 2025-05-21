@@ -120,6 +120,7 @@ CREATE TABLE `deliveryMans` (
     `email` VARCHAR(255) NULL,
     `password` VARCHAR(255) NULL,
 
+    UNIQUE INDEX `deliveryMans_email_key`(`email`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

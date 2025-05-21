@@ -5,6 +5,8 @@ import adminRouter from './routes/admins';
 import cartRouter from './routes/carts';
 import productRouter from './routes/products';
 import orderRouter from './routes/orders';
+import paymentRouter from './routes/paymentMethods'
+import deliveryManRouter from './routes/deliveryMans'
 import cors from 'cors';
 
 const app = express();
@@ -19,6 +21,8 @@ app.use('/admins', adminRouter);
 app.use('/carts', cartRouter);
 app.use('/products', productRouter);
 app.use('/orders', orderRouter);
+app.use('/paymentMethods', paymentRouter)
+app.use('/deliveryManRouter', deliveryManRouter)
 
 app.get('/', (req, res) => {
   res.send('API EasyGas rodando!');
