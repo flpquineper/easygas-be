@@ -68,7 +68,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       user: {
         id: user.id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        phone: true,
+        address: true,
+        complementAddress: true,
       }
     });
   } catch (error) {

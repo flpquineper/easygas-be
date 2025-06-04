@@ -6,8 +6,8 @@ const prisma = new PrismaClient();
 
 export const createProduct = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, price } = req.body;
-    const image = req.file?.filename;
+    const { name, price, image } = req.body;
+    // const image = req.file?.filename;
 
     if (!name || !price || !image) {
       res.status(400).json({ error: 'Nome, preço e imagem são obrigatórios.' });
