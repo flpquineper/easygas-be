@@ -12,8 +12,8 @@ model User {
   name              String? @db.VarChar(255)
   email             String? @unique @db.VarChar(255)
   password          String? @db.VarChar(100)
-  phone             String? @db.VarChar(11)
-  cpf               String? @db.VarChar(11)
+  phone             String? @unique @db.VarChar(13)
+  cpf               String? @unique @db.VarChar(11)
   address           String? @db.VarChar(255)
   complementAddress String  @db.VarChar(255)
   carts             Cart[]

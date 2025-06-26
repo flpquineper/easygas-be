@@ -21,8 +21,8 @@ app.use('/admins', adminRouter);
 app.use('/carts', cartRouter);
 app.use('/products', productRouter);
 app.use('/orders', orderRouter);
-app.use('/paymentMethods', paymentRouter)
-app.use('/deliveryManRouter', deliveryManRouter)
+app.use('/', paymentRouter)
+app.use('/', deliveryManRouter)
 
 app.get('/', (req, res) => {
   res.send('API EasyGas rodando!');

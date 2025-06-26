@@ -8,7 +8,7 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response): Pro
   const userId = (req.user as any)?.id;
 
   try {
-    // 1. Busca todos os itens do carrinho do usuário, com dados do produto
+    // Busca todos os itens do carrinho do usuário, com dados do produto
     const cartItems = await prisma.cartItem.findMany({
       where: {
         cart: {
@@ -25,17 +25,17 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response): Pro
       return;
     }
 
-    // 2. Cria o pedido com os dados do carrinho
+    // Cria o pedido com os dados do carrinho
     const order = await prisma.order.create({
       data: {
         userId,
-        paymentMethodId: 1, // substitua por ID real conforme o contexto
-        statusId: 1, // substitua por status inicial (ex: "Pendente")
+        paymentMethodId: 1, // ID real conforme o contexto
+        statusId: 1, // status inicial (ex: "Pendente")
         items: {
           create: cartItems.map(item => ({
             productId: item.productId,
             quantity: item.quantity,
-            price: item.product.price // ✅ salva o preço atual
+            price: item.product.price
           }))
         }
       },
@@ -44,7 +44,7 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response): Pro
       }
     });
 
-    // 3. Limpa carrinho após criação do pedido
+    // Limpa carrinho após criação do pedido
     await prisma.cartItem.deleteMany({
       where: {
         cart: {

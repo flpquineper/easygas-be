@@ -5,7 +5,6 @@ import { AuthenticatedRequest } from '../middlewares/auth';
 
 const prisma = new PrismaClient();
 
-// Criar novo método de pagamento (acesso restrito ao admin, se desejar)
 export const createPaymentMethod = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const { methodName } = req.body;
 
@@ -20,7 +19,6 @@ export const createPaymentMethod = async (req: AuthenticatedRequest, res: Respon
   }
 };
 
-// Listar todos os métodos de pagamento
 export const listPaymentMethods = async (_req: Request, res: Response): Promise<void> => {
   try {
     const methods = await prisma.paymentMethod.findMany();
@@ -46,7 +44,6 @@ export const updatePaymentMethod = async (req: AuthenticatedRequest, res: Respon
   }
 };
 
-// Remover
 export const removePaymentMethod = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const { id } = req.params;
 

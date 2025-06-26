@@ -5,8 +5,6 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'easygas_secret_key';
-
-// Interface para adicionar o campo user ao Request
 interface AuthenticatedRequest extends Request {
   user?: string | JwtPayload;
 }
