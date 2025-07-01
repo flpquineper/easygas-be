@@ -1,3 +1,5 @@
+// Substitua todo o seu arquivo por este código
+
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
@@ -9,7 +11,6 @@ interface AuthenticatedRequest extends Request {
   user?: string | JwtPayload;
 }
 
-// REGISTER
 export const register = async (req: Request, res: Response): Promise<void> => {
   const { name, email, password, phone, cpf, address, complementAddress } = req.body;
 
@@ -30,18 +31,17 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         phone,
         cpf,
         address,
-        complementAddress
+        complementAddress,
       }
     });
 
     res.status(201).json({ id: newUser.id, name: newUser.name, email: newUser.email });
   } catch (error) {
-    console.error(error); 
-    res.status(500).json({ erro: 'Erro ao registrar usuário.', detalhes: error });
+    console.error("Erro no registro:", error);
+    res.status(500).json({ erro: 'Erro ao registrar usuário.' });
   }
 };
 
-// LOGIN
 export const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
   const mensagemPadrao = 'Email ou senha incorretos.';
@@ -67,26 +67,24 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         id: user.id,
         name: user.name,
         email: user.email,
-        phone: true,
-        address: true,
-        complementAddress: true,
+        phone: user.phone,
+        address: user.address,
+        complementAddress: user.complementAddress,
       }
     });
   } catch (error) {
-    res.status(500).json({ erro: 'Erro ao fazer login.', detalhes: error });
+    console.error("Erro no login:", error);
+    res.status(500).json({ erro: 'Erro ao fazer login.' });
   }
 };
 
-// PROFILE
 export const profile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const userId = (req.user as JwtPayload)?.id;
-
     if (!userId) {
       res.status(401).json({ erro: 'Usuário não autenticado.' });
       return;
     }
-
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -98,14 +96,12 @@ export const profile = async (req: AuthenticatedRequest, res: Response): Promise
         complementAddress: true
       }
     });
-
     if (!user) {
       res.status(404).json({ erro: 'Usuário não encontrado.' });
       return;
     }
-
     res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({ erro: 'Erro ao buscar perfil.', detalhes: error });
+    res.status(500).json({ erro: 'Erro ao buscar perfil.' });
   }
 };

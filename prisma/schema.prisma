@@ -45,8 +45,8 @@ model Product {
 
 model Cart {
   id     Int        @id @default(autoincrement())
-  userId Int
-  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int?        @unique
+  user   User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
   items  CartItem[]
 
   @@index([userId])
@@ -63,6 +63,7 @@ model CartItem {
 
   @@index([cartId])
   @@index([productId])
+  @@unique([cartId, productId]) 
   @@map("cart_items")
 }
 

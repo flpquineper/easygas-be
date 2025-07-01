@@ -29,8 +29,8 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response): Pro
     const order = await prisma.order.create({
       data: {
         userId,
-        paymentMethodId: 1, // ID real conforme o contexto
-        statusId: 1, // status inicial (ex: "Pendente")
+        paymentMethodId: 1,
+        statusId: 1,
         items: {
           create: cartItems.map(item => ({
             productId: item.productId,
@@ -43,8 +43,6 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response): Pro
         items: true
       }
     });
-
-    // Limpa carrinho após criação do pedido
     await prisma.cartItem.deleteMany({
       where: {
         cart: {
