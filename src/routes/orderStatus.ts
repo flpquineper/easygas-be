@@ -11,7 +11,7 @@ import { isAdmin } from '../middlewares/isAdmin';
 const router = Router();
 
 // Listar todos os status (para exibir em selects, etc)
-router.get('/', authMiddleware, listStatuses);
+router.get('/', authMiddleware, isAdmin, listStatuses);
 
 // Criar novo status
 router.post('/', authMiddleware, isAdmin, createStatus);

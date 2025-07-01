@@ -1,3 +1,5 @@
+// Substitua o conteúdo de src/routes/orders.ts por este
+
 import { Router } from 'express';
 import {
   createOrder,
@@ -11,12 +13,13 @@ import { isAdmin } from '../middlewares/isAdmin';
 
 const router = Router();
 
-router.post('/orders', authMiddleware, createOrder);
-router.get('/orders', authMiddleware, listOrders); 
-router.get('/orders/:id', authMiddleware, getOrder);
 
+router.get('/', authMiddleware, listOrders);
+router.post('/', authMiddleware, createOrder); 
 
-router.patch('/orders/:id/status', authMiddleware, isAdmin, updateOrderStatus); 
-router.patch('/orders/:id/cancel', authMiddleware, isAdmin, cancelOrder);    
+router.get('/:id', authMiddleware, getOrder);
+
+router.patch('/:id/status', authMiddleware, isAdmin, updateOrderStatus); 
+router.patch('/:id/cancel', authMiddleware, isAdmin, cancelOrder);    
 
 export default router;

@@ -91,6 +91,7 @@ export const profile = async (req: AuthenticatedRequest, res: Response): Promise
         id: true,
         name: true,
         email: true,
+        cpf: true,
         phone: true,
         address: true,
         complementAddress: true

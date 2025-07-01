@@ -7,6 +7,7 @@ import productRouter from './routes/products';
 import orderRouter from './routes/orders';
 import paymentRouter from './routes/paymentMethods'
 import deliveryManRouter from './routes/deliveryMans'
+import orderStatusRouter from './routes/orderStatus'
 import cors from 'cors';
 
 const app = express();
@@ -20,7 +21,8 @@ app.use('/users', userRouter);
 app.use('/admins', adminRouter);
 app.use('/api/carts', cartRouter);
 app.use('/products', productRouter);
-app.use('/orders', orderRouter);
+app.use('/api/orders', orderRouter);
+app.use('/orderStatus', orderStatusRouter)
 app.use('/', paymentRouter)
 app.use('/', deliveryManRouter)
 

@@ -9,13 +9,13 @@ generator client {
 
 model User {
   id                Int     @id @default(autoincrement())
-  name              String? @db.VarChar(255)
-  email             String? @unique @db.VarChar(255)
-  password          String? @db.VarChar(100)
-  phone             String? @unique @db.VarChar(13)
-  cpf               String? @unique @db.VarChar(11)
-  address           String? @db.VarChar(255)
-  complementAddress String  @db.VarChar(255)
+  name              String  @db.VarChar(255)
+  email             String  @unique @db.VarChar(255)
+  password          String  @db.VarChar(100)
+  phone             String  @unique @db.VarChar(13)
+  cpf               String  @unique @db.VarChar(11)
+  address           String  @db.VarChar(255)
+  complementAddress String? @db.VarChar(255)
   carts             Cart[]
   orders            Order[]
 
@@ -24,16 +24,16 @@ model User {
 
 model Admin {
   id       Int     @id @default(autoincrement())
-  name     String? @db.VarChar(255)
-  email    String? @unique
-  password String? @db.VarChar(255)
+  name     String  @db.VarChar(255)
+  email    String  @unique
+  password String  @db.VarChar(255)
 
   @@map("admins")
 }
 
 model Product {
   id    Int     @id @default(autoincrement())
-  name  String? @db.VarChar(255)
+  name  String  @db.VarChar(255)
   price Decimal @db.Decimal(10, 2)
   image String? @db.VarChar(255)
 

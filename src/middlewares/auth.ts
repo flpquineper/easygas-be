@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'easygas_secret_key';
 
-// Aqui definimos o que será esperado dentro do JWT
 interface JwtPayloadCustom {
   id: number;
   email: string;
@@ -33,7 +32,6 @@ export const authMiddleware: RequestHandler = (
       return;
     }
 
-    // Aqui garantimos que o objeto seja do tipo correto
     (req as AuthenticatedRequest).user = decoded as JwtPayloadCustom;
     next();
   });
