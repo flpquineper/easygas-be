@@ -11,10 +11,14 @@ COPY package*.json ./
 RUN npm install --omit=dev
 
 COPY --from=builder /app/dist ./dist
-
 COPY prisma ./prisma 
 
-RUN npm run migrate:prod
+COPY entrypoint.sh .
+
+RUN chmod +x ./entrypoint.sh
 
 EXPOSE 3305
+
+ENTRYPOINT ["./entrypoint.sh"]
+
 CMD ["npm", "run", "start"]
