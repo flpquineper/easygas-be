@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { AuthenticatedRequest } from '../middlewares/auth';
 import { JwtPayload } from 'jsonwebtoken';
 
@@ -20,7 +20,7 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response): Pro
   }
 
   try {
-    const newOrder = await prisma.$transaction(async (tx) => {
+    const newOrder = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const fullAddressForNote = `${address}${complementAddress ? ` - ${complementAddress}` : ''}`;
 
       const order = await tx.order.create({

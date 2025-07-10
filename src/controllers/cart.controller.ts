@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { AuthenticatedRequest } from "../middlewares/auth";
 
 const prisma = new PrismaClient();
@@ -72,7 +72,7 @@ export const associateUser = async (req: AuthenticatedRequest, res: Response) =>
     }
 
     if (anonymousCart.items.length > 0) {
-      await prisma.$transaction(async (tx) => {
+      await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
         for (const item of anonymousCart.items) {
           await tx.cartItem.upsert({
             where: { cartId_productId: { cartId: userCart.id, productId: item.productId } },
