@@ -13,7 +13,22 @@ import cors from 'cors';
 const app = express();
 const prisma = new PrismaClient();
 
-app.use(cors());
+const allowedOrigins = [
+  'http://localhost:3000', 
+  'https://easygas-ten.vercel.app/' 
+];
+
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Não permitido pelo CORS'));
+    }
+  }
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
