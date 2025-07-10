@@ -1,18 +1,20 @@
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run build # Este comando compila seu TS para JS (geralmente em uma pasta /dist)
+RUN npm run build
 
-FROM node:18-alpine
+FROM node:20-alpine
 WORKDIR /app
 COPY package*.json ./
-
 RUN npm install --omit=dev
 
 COPY --from=builder /app/dist ./dist
 
-EXPOSE 3305
+COPY prisma ./prisma 
 
-CMD ["node", "dist/index.js"]
+RUN npm run migrate:prod
+
+EXPOSE 3305
+CMD ["npm", "run", "start"]
