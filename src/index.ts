@@ -16,7 +16,7 @@ const prisma = new PrismaClient();
 const allowedOrigins = [
   'http://localhost:3000', 
   'https://easygas-ten.vercel.app/' ,
-  'https://easygas-api.onrender.com'
+  'https://easygas-fe.onrender.com'
 ];
 
 const corsOptions: cors.CorsOptions = {
