@@ -97,6 +97,9 @@ export const listOrders = async (req: AuthenticatedRequest, res: Response): Prom
 
 export const getOrder = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const { id } = req.params;
+  const userId = (req.user as any)?.id;
+  const user = req.user as any;
+
   try {
     const order = await prisma.order.findUnique({
       where: { id: Number(id) },
@@ -106,10 +109,17 @@ export const getOrder = async (req: AuthenticatedRequest, res: Response): Promis
         status: true,
       },
     });
+    
     if (!order) {
       res.status(404).json({ erro: 'Pedido não encontrado.' });
       return;
     }
+
+    if (!user.isAdmin && order.userId !== userId) {
+      res.status(403).json({ erro: 'Acesso negado. Este pedido não pertence a você.' });
+      return;
+    }
+
     res.status(200).json(order);
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao buscar pedido.', detalhes: error });
@@ -165,5 +175,22 @@ export const cancelOrder = async (req: AuthenticatedRequest, res: Response): Pro
     res.status(200).json({ mensagem: 'Pedido cancelado com sucesso.', pedido: updated });
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao cancelar pedido.', detalhes: error });
+  }
+};
+
+export const listAllOrders = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const orders = await prisma.order.findMany({
+      include: {
+        user: { select: { name: true, phone: true } }, // É útil para o admin ver o nome do cliente
+        items: { include: { product: true } },
+        paymentMethod: true,
+        status: true,
+      },
+      orderBy: { orderDate: 'desc' }
+    });
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao listar todos os pedidos.', detalhes: error });
   }
 };
