@@ -188,22 +188,27 @@ export const clearUserCart = async (req: AuthenticatedRequest, res: Response) =>
 
 export const addItemToUserCart = async (req: AuthenticatedRequest, res: Response) => {
   if (!req.user) return res.status(401).json({ error: "Não autenticado" });
-  
+
   const { productId, quantity } = req.body;
   const userId = req.user.id;
 
   try {
-    const cart = await prisma.cart.findUnique({ where: { userId } });
-    if (!cart) return res.status(404).json({ error: "Carrinho do usuário não encontrado." });
+    // Lógica "Get or Create". Encontra o carrinho do usuário ou cria um novo se não existir.
+    const cart = await prisma.cart.upsert({
+      where: { userId },
+      update: {},
+      create: { userId }, 
+    });
 
     const item = await prisma.cartItem.upsert({
       where: { cartId_productId: { cartId: cart.id, productId } },
       update: { quantity: { increment: quantity } },
       create: { cartId: cart.id, productId, quantity }
     });
-    
+
     res.status(201).json(item);
   } catch (error) {
+    console.error("Erro ao adicionar item ao carrinho do usuário:", error);
     res.status(500).json({ error: "Erro ao adicionar item ao carrinho do usuário." });
   }
 };
