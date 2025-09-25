@@ -30,6 +30,18 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    const existingPhone = await prisma.user.findUnique({ where: { phone } });
+    if (existingPhone) {
+      res.status(400).json({ erro: 'Este telefone já está em uso.' });
+      return
+    }
+
+    const existingCpf = await prisma.user.findUnique({ where: { cpf } });
+    if (existingCpf) {
+      res.status(400).json({ erro: 'Este CPF já está em uso.' });
+      return
+    }
+
     const hashedPassword = bcrypt.hashSync(password, 10);
 
     const newUser = await prisma.user.create({

@@ -9,13 +9,13 @@ generator client {
 
 model User {
   id                Int     @id @default(autoincrement())
-  name              String  @db.VarChar(255)
-  email             String  @unique @db.VarChar(255)
-  password          String  @db.VarChar(100)
-  phone             String  @unique @db.VarChar(13)
-  cpf               String  @unique @db.VarChar(11)
-  address           String  @db.VarChar(255)
-  complementAddress String? @db.VarChar(255)
+  name              String  
+  email             String  @unique 
+  password          String  
+  phone             String  @unique 
+  cpf               String  @unique 
+  address           String  
+  complementAddress String? 
   carts             Cart[]
   orders            Order[]
 
@@ -24,18 +24,18 @@ model User {
 
 model Admin {
   id       Int     @id @default(autoincrement())
-  name     String  @db.VarChar(255)
+  name     String  
   email    String  @unique
-  password String  @db.VarChar(255)
+  password String  
 
   @@map("admins")
 }
 
 model Product {
   id    Int     @id @default(autoincrement())
-  name  String  @db.VarChar(255)
-  price Decimal @db.Decimal(10, 2)
-  image String? @db.VarChar(255)
+  name  String  
+  price Decimal
+  image String? 
 
   cartItems  CartItem[]
   orderItems OrderItem[]
@@ -44,9 +44,9 @@ model Product {
 }
 
 model Cart {
-  id     Int        @id @default(autoincrement())
-  userId Int?        @unique
-  user   User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     Int    @id @default(autoincrement())
+  userId Int?   @unique
+  user   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
   items  CartItem[]
 
   @@index([userId])
@@ -74,7 +74,7 @@ model Order {
   deliveryManId   Int?
   statusId        Int
   orderDate       DateTime             @default(now())
-  orderNote       String?              @db.VarChar(255)
+  orderNote       String?              
   deliveryTime    DateTime?
   user            User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   paymentMethod   PaymentMethod        @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
@@ -94,7 +94,7 @@ model OrderItem {
   orderId   Int
   productId Int
   quantity  Int
-  price     Decimal @db.Decimal(10, 2)
+  price     Decimal 
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -104,8 +104,8 @@ model OrderItem {
 }
 
 model OrderStatus {
-  id         Int                  @id @default(autoincrement())
-  statusName String               @db.VarChar(100)
+  id         Int  @id @default(autoincrement())
+  statusName String              
   orders     Order[]
   history    OrderStatusHistory[]
 
@@ -127,7 +127,7 @@ model OrderStatusHistory {
 
 model PaymentMethod {
   id         Int     @id @default(autoincrement())
-  methodName String  @db.VarChar(100)
+  methodName String  
   orders     Order[]
 
   @@map("payment_methods")
@@ -135,9 +135,9 @@ model PaymentMethod {
 
 model DeliveryMan {
   id       Int     @id @default(autoincrement())
-  name     String? @db.VarChar(255)
-  email    String? @unique @db.VarChar(255)
-  password String? @db.VarChar(255)
+  name     String? 
+  email    String? @unique 
+  password String? 
   orders   Order[]
 
   @@map("deliveryMans")
