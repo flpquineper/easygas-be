@@ -2,10 +2,18 @@ import { Router } from 'express';
 import multer from 'multer';
 import crypto from 'crypto';
 import path from 'path';
-import { createProduct, deleteProduct, listProducts, updateProduct } from '../controllers/product.controller';
+import { 
+  createProduct, 
+  deleteProduct, 
+  listProducts, 
+  updateProduct,
+  getProductById 
+} from '../controllers/product.controller';
 import { authMiddleware } from '../middlewares/auth';
+import { isAdmin } from '../middlewares/isAdmin'; 
 
 const router = Router();
+const adminOnly = [authMiddleware, isAdmin];
 
 const storage = multer.diskStorage({
   destination: path.join(__dirname,'uploads'),
@@ -18,9 +26,13 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.post('/', authMiddleware, upload.single('image'), createProduct);
+// Rotas públicas
 router.get('/', listProducts);
-router.put('/:id', authMiddleware, updateProduct);
-router.delete('/:id', authMiddleware, deleteProduct);
+
+// Rotas privadas para admins
+router.post('/products', adminOnly, upload.single('image'), createProduct);
+router.put('/:id', adminOnly, updateProduct);
+router.delete('/:id', adminOnly, deleteProduct);
+router.get('/:id', adminOnly, getProductById);
 
 export default router;

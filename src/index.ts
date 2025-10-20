@@ -8,12 +8,14 @@ import orderRouter from './routes/orders';
 import paymentRouter from './routes/paymentMethods'
 import deliveryManRouter from './routes/deliveryMans'
 import orderStatusRouter from './routes/orderStatus'
+import statsRoutes from './routes/stats';
 import cors from 'cors';
 
 const app = express();
 const prisma = new PrismaClient();
 
 const allowedOrigins = [
+  'http://localhost:3001',
   'http://localhost:3000', 
   'https://easygas-ten.vercel.app/' ,
   'https://easygas-fe.onrender.com'
@@ -41,6 +43,7 @@ app.use('/api/orders', orderRouter);
 app.use('/orderStatus', orderStatusRouter)
 app.use('/', paymentRouter)
 app.use('/', deliveryManRouter)
+app.use('/', statsRoutes); 
 
 app.get('/', (req, res) => {
   res.send('API EasyGas rodando!');

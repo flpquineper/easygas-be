@@ -1,27 +1,28 @@
-import { PrismaClient } from '@prisma/client';
 import { Router } from 'express';
 import * as adminController from '../controllers/admin.controller';
 import { authMiddleware } from '../middlewares/auth';
+import { isAdmin } from '../middlewares/isAdmin';
 
 const router = Router();
-const prisma = new PrismaClient();
-router.get("/admins", async (req, res) => {
-  try {
-    const users = await prisma.admin.findMany({
-    })
-    res.status(200).json(users)
-  } catch (error) {
-    res.status(400).json(error)
-  }
-})
+const adminOnly = [authMiddleware, isAdmin];
 
+// POST /admins/register -> Cria um novo admin.
 router.post('/register', adminController.register);
+
+// POST /admins/login -> Autentica um admin e retorna um token.
 router.post('/login', adminController.login);
 
-router.get('/profile/listing/:id', authMiddleware, adminController.profile);
-router.put('/profile/update/:id', authMiddleware, adminController.update);
-router.delete('/profile/delete/:id', authMiddleware, adminController.remove);
+// GET /admins/profile -> Retorna o perfil do admin LOGADO (baseado no token).
+router.get('/profile', authMiddleware, adminController.profile);
 
+// GET /admins -> Lista todos os administradores (protegido).
+router.get('/admins', adminOnly, adminController.listAdmins);
+
+// GET /admins/:id -> Busca um administrador específico (protegido).
+router.get('/admins/:id', adminOnly, adminController.getAdminById);
+
+// DELETE /admins/:id -> Deleta um administrador (protegido).
+router.delete('/admins/:id', adminOnly, adminController.deleteAdmin);
 
 
 export default router;
