@@ -89,6 +89,13 @@ export const profileDeliveryMan = async (req: Request, res: Response): Promise<v
   }
 };
 
+const deliveryManPublicData = {
+  id: true,
+  name: true,
+  email: true,
+};
+
+// Listar todos os entregadores (para o Admin)
 export const listDeliveryMen = async (req: Request, res: Response): Promise<void> => {
   try {
     const deliveryMen = await prisma.deliveryMan.findMany({
@@ -100,6 +107,26 @@ export const listDeliveryMen = async (req: Request, res: Response): Promise<void
   }
 };
 
+// Buscar um entregador por ID (para o Admin)
+export const getDeliveryManById = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+  try {
+    const deliveryMan = await prisma.deliveryMan.findUnique({
+      where: { id: Number(id) },
+      select: deliveryManPublicData,
+    });
+
+    if (!deliveryMan) {
+      res.status(404).json({ erro: 'Entregador não encontrado.' });
+      return;
+    }
+    res.status(200).json(deliveryMan);
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao buscar entregador.', detalhes: error });
+  }
+};
+
+// Atualizar um entregador (para o Admin)
 export const updateDeliveryMan = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
   const { name, email, password } = req.body;
@@ -109,6 +136,7 @@ export const updateDeliveryMan = async (req: Request, res: Response): Promise<vo
 
     if (name) dataToUpdate.name = name;
     if (email) dataToUpdate.email = email;
+    // Se uma nova senha for enviada, fazemos o hash dela antes de salvar
     if (password) {
       dataToUpdate.password = bcrypt.hashSync(password, 10);
     }
@@ -124,13 +152,14 @@ export const updateDeliveryMan = async (req: Request, res: Response): Promise<vo
   }
 };
 
+// Deletar um entregador (para o Admin)
 export const deleteDeliveryMan = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
   try {
     await prisma.deliveryMan.delete({
       where: { id: Number(id) },
     });
-    res.status(204).send();
+    res.status(204).send(); // Resposta de sucesso sem conteúdo
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao deletar entregador.', detalhes: error });
   }

@@ -97,12 +97,8 @@ export const listOrders = async (req: AuthenticatedRequest, res: Response): Prom
 
 export const getOrder = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const { id } = req.params;
-  const user = req.user;
-
-  if (!user) {
-    res.status(401).json({ erro: 'Usuário não autenticado.' });
-    return; 
-  }
+  const userId = (req.user as any)?.id;
+  const user = req.user as any;
 
   try {
     const order = await prisma.order.findUnique({
@@ -113,17 +109,17 @@ export const getOrder = async (req: AuthenticatedRequest, res: Response): Promis
         status: true,
       },
     });
-
+    
     if (!order) {
       res.status(404).json({ erro: 'Pedido não encontrado.' });
       return;
     }
 
-    if (user.role !== 'admin' && order.userId !== user.id) {
-      res.status(403).json({ erro: 'Acesso negado.' });
+    if (!user.isAdmin && order.userId !== userId) {
+      res.status(403).json({ erro: 'Acesso negado. Este pedido não pertence a você.' });
       return;
     }
-    
+
     res.status(200).json(order);
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao buscar pedido.' });
@@ -186,7 +182,7 @@ export const listAllOrders = async (req: Request, res: Response): Promise<void> 
   try {
     const orders = await prisma.order.findMany({
       include: {
-        user: { select: { name: true, phone: true } },
+        user: { select: { name: true, phone: true } }, // É útil para o admin ver o nome do cliente
         items: { include: { product: true } },
         paymentMethod: true,
         status: true,
@@ -195,6 +191,6 @@ export const listAllOrders = async (req: Request, res: Response): Promise<void> 
     });
     res.status(200).json(orders);
   } catch (error) {
-    res.status(500).json({ erro: 'Erro ao listar todos os pedidos.' });
+    res.status(500).json({ erro: 'Erro ao listar todos os pedidos.', detalhes: error });
   }
 };

@@ -6,7 +6,8 @@ const prisma = new PrismaClient();
 
 export const createProduct = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, price, image } = req.body;
+    const { name, price } = req.body;
+    const image = req.file?.filename;
 
     if (!name || !price || !image) {
       res.status(400).json({ error: 'Nome, preço e imagem são obrigatórios.' });
@@ -67,8 +68,8 @@ export const deleteProduct = async (req: Request, res: Response): Promise<void> 
 };
 
 export const getProductById = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
   try {
+    const { id } = req.params;
     const product = await prisma.product.findUnique({
       where: { id: Number(id) },
     });
@@ -77,6 +78,7 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
       res.status(404).json({ error: 'Produto não encontrado.' });
       return;
     }
+
     res.status(200).json(product);
   } catch (error) {
     res.status(500).json({ error: 'Erro ao buscar produto.' });

@@ -5,34 +5,28 @@ import {
   loginDeliveryMan,
   profileDeliveryMan,
   listDeliveryMen,
+  getDeliveryManById,
   updateDeliveryMan,
-  deleteDeliveryMan,
+  deleteDeliveryMan
 } from '../controllers/deliveryMan.controller';
-
 import { authMiddleware } from '../middlewares/auth';
 import { isAdmin } from '../middlewares/isAdmin';
 
 const router = Router();
 const adminOnly = [authMiddleware, isAdmin];
 
+// Rotas públicas
+router.post('/deliveryman/login', loginDeliveryMan);
 
-// ROTAS DE GERENCIAMENTO DE ENTREGADORES
+// Rota privada entregador
+router.get('/deliveryman/profile', authMiddleware, profileDeliveryMan);
 
-// POST Cria um novo entregador
-router.post('/deliverymen', adminOnly, registerDeliveryMan);
 
-// GET Lista todos os entregadores
+// Rotas privadas admin
+router.post('/deliveryman/register', adminOnly, registerDeliveryMan);
 router.get('/deliverymen', adminOnly, listDeliveryMen);
-
-// PATCH Atualiza um entregador
-router.patch('/deliverymen/:id', adminOnly, updateDeliveryMan);
-
-// DELETE Deleta um entregador
+router.get('/deliverymen/:id', adminOnly, getDeliveryManById);
+router.put('/deliverymen/:id', adminOnly, updateDeliveryMan);
 router.delete('/deliverymen/:id', adminOnly, deleteDeliveryMan);
-
-// ROTAS DE AUTENTICAÇÃO
-router.post('/deliverymen/login', loginDeliveryMan);
-router.get('/deliverymen/profile', authMiddleware, profileDeliveryMan);
-
 
 export default router;

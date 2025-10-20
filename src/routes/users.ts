@@ -1,28 +1,25 @@
-import { PrismaClient } from '@prisma/client';
 import { Router } from 'express';
 import * as userController from '../controllers/user.controller';
 import { authMiddleware } from '../middlewares/auth';
 import { isAdmin } from '../middlewares/isAdmin';
 
-
-const prisma = new PrismaClient();
 const router = Router();
 const adminOnly = [authMiddleware, isAdmin];
 
 // Rotas públicas
-router.post('/register', userController.register);
-router.post('/login', userController.login);
-// Rotas privada usuário
-router.get('/profile', authMiddleware, userController.profile); // rota privada para visualizar o perfil do usuário autenticado
-router.patch('/profile', authMiddleware, userController.updateProfile); // rota privada para atualizar o perfil do usuário autenticado
+router.post('/register', userController.register); // rota cadastro 
+router.post('/login', userController.login); // rota login
 
-//Rotas Privadas de Admin 
-router.get('/', adminOnly, userController.listAllUsers); // Listar todos os usuários
-router.get('/:id', adminOnly, userController.getUserById); // Obter um usuário por ID
-router.patch('/:id', adminOnly, userController.updateUser); // Atualizar um usuário
-router.delete('/:id', adminOnly, userController.deleteUser); // Deletar um usuário
-router.get('/:id/orders', adminOnly, userController.listUserOrders); // Listar pedidos de um usuário específico
 
+// Rota privada usuário
+router.get('/profile', authMiddleware, userController.profile); // rota privada para visualização dos dados do usuário autenticada com middleware
+router.patch('/:id', authMiddleware, userController.updateProfile)  // atualizar dados da conta do usuário
+
+// Rotas privadas de admin
+router.get('/', adminOnly, userController.listAllUsers); // listar usuários cadastrados
+router.get('/:id', adminOnly, userController.getUserById); // listar usuário específico
+router.patch('/:id', adminOnly, userController.updateUserByAdmin); // atualizar dados usuário específico
+router.delete('/:id', adminOnly, userController.deleteUser); // excluir dados usuário
 
 
 export default router;
