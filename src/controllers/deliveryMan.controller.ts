@@ -6,6 +6,12 @@ import jwt from 'jsonwebtoken';
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'easygas_secret_key';
 
+const deliveryManPublicData = {
+  id: true,
+  name: true,
+  email: true,
+};
+
 export const registerDeliveryMan = async (req: Request, res: Response): Promise<void> => {
   const { name, email, password } = req.body;
 

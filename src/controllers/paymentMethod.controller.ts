@@ -28,7 +28,6 @@ export const listPaymentMethods = async (_req: Request, res: Response): Promise<
   }
 };
 
-// Atualizar um método
 export const updatePaymentMethod = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const { id } = req.params;
   const { methodName } = req.body;

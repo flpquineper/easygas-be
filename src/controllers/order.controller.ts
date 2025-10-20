@@ -122,7 +122,7 @@ export const getOrder = async (req: AuthenticatedRequest, res: Response): Promis
 
     res.status(200).json(order);
   } catch (error) {
-    res.status(500).json({ erro: 'Erro ao buscar pedido.', detalhes: error });
+    res.status(500).json({ erro: 'Erro ao buscar pedido.' });
   }
 };
 

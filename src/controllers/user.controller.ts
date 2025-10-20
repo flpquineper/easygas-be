@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
@@ -18,6 +18,25 @@ const userPublicData = {
   complementAddress: true,
   role: true,
   orders: true,
+};
+
+const userListSelect = {
+  id: true,
+  name: true,
+  email: true,
+  cpf: true,
+  phone: true,
+  address: true,
+  complementAddress: true,
+};
+
+const userDetailSelect = {
+  ...userListSelect,
+  orders: {
+    orderBy: {
+      orderDate: 'desc' as Prisma.SortOrder,
+    },
+  },
 };
 
 export const register = async (req: Request, res: Response): Promise<void> => {

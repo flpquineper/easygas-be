@@ -13,6 +13,7 @@ import { authMiddleware } from '../middlewares/auth';
 import { isAdmin } from '../middlewares/isAdmin';
 
 const router = Router();
+const adminOnly = [authMiddleware, isAdmin];
 
 // Aqui estamos configurando o multer para salvar arquivos em disco, utilizando o crypto.randomBytes
 const storage = multer.diskStorage({

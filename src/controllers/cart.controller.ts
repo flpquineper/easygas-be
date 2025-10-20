@@ -193,7 +193,6 @@ export const addItemToUserCart = async (req: AuthenticatedRequest, res: Response
   const userId = req.user.id;
 
   try {
-    // Lógica "Get or Create". Encontra o carrinho do usuário ou cria um novo se não existir.
     const cart = await prisma.cart.upsert({
       where: { userId },
       update: {},
