@@ -89,12 +89,6 @@ export const profileDeliveryMan = async (req: Request, res: Response): Promise<v
   }
 };
 
-const deliveryManPublicData = {
-  id: true,
-  name: true,
-  email: true,
-};
-
 // Listar todos os entregadores (para o Admin)
 export const listDeliveryMen = async (req: Request, res: Response): Promise<void> => {
   try {

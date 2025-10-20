@@ -9,13 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteProduct = exports.updateProduct = exports.listProducts = exports.createProduct = void 0;
+exports.getProductById = exports.deleteProduct = exports.updateProduct = exports.listProducts = exports.createProduct = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
-        const { name, price, image } = req.body;
-        // const image = req.file?.filename;
+        const { name, price } = req.body;
+        const image = (_a = req.file) === null || _a === void 0 ? void 0 : _a.filename;
         if (!name || !price || !image) {
             res.status(400).json({ error: 'Nome, preço e imagem são obrigatórios.' });
             return;
@@ -72,3 +73,20 @@ const deleteProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.deleteProduct = deleteProduct;
+const getProductById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const product = yield prisma.product.findUnique({
+            where: { id: Number(id) },
+        });
+        if (!product) {
+            res.status(404).json({ error: 'Produto não encontrado.' });
+            return;
+        }
+        res.status(200).json(product);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Erro ao buscar produto.' });
+    }
+});
+exports.getProductById = getProductById;

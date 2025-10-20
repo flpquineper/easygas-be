@@ -32,34 +32,23 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const client_1 = require("@prisma/client");
 const express_1 = require("express");
 const adminController = __importStar(require("../controllers/admin.controller"));
 const auth_1 = require("../middlewares/auth");
+const isAdmin_1 = require("../middlewares/isAdmin");
 const router = (0, express_1.Router)();
-const prisma = new client_1.PrismaClient();
-router.get("/admins", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const users = yield prisma.admin.findMany({});
-        res.status(200).json(users);
-    }
-    catch (error) {
-        res.status(400).json(error);
-    }
-}));
+const adminOnly = [auth_1.authMiddleware, isAdmin_1.isAdmin];
+// POST /admins/register -> Cria um novo admin.
 router.post('/register', adminController.register);
+// POST /admins/login -> Autentica um admin e retorna um token.
 router.post('/login', adminController.login);
-router.get('/profile/listing/:id', auth_1.authMiddleware, adminController.profile);
-router.put('/profile/update/:id', auth_1.authMiddleware, adminController.update);
-router.delete('/profile/delete/:id', auth_1.authMiddleware, adminController.remove);
+// GET /admins/profile -> Retorna o perfil do admin LOGADO (baseado no token).
+router.get('/profile', auth_1.authMiddleware, adminController.profile);
+// GET /admins -> Lista todos os administradores (protegido).
+router.get('/admins', adminOnly, adminController.listAdmins);
+// GET /admins/:id -> Busca um administrador específico (protegido).
+router.get('/admins/:id', adminOnly, adminController.getAdminById);
+// DELETE /admins/:id -> Deleta um administrador (protegido).
+router.delete('/admins/:id', adminOnly, adminController.deleteAdmin);
 exports.default = router;

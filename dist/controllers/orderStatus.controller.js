@@ -52,6 +52,6 @@ function deleteStatus(req, res) {
         }
         // Faz o delete e responde!
         yield prisma.orderStatus.delete({ where: { id: statusId } });
-        return res.status(204).send(); // ou res.json({ success: true });
+        return res.status(204).send();
     });
 }

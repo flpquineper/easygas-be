@@ -6,7 +6,6 @@ import {
   getOrder,
   updateOrderStatus,
   cancelOrder,
-  listAllOrders
 } from '../controllers/order.controller';
 import { authMiddleware } from '../middlewares/auth';
 import { isAdmin } from '../middlewares/isAdmin';

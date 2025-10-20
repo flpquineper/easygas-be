@@ -33,21 +33,11 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+// src/routes/stats.ts
 const express_1 = require("express");
-const userController = __importStar(require("../controllers/user.controller"));
+const statsController = __importStar(require("../controllers/stats.controller"));
 const auth_1 = require("../middlewares/auth");
 const isAdmin_1 = require("../middlewares/isAdmin");
 const router = (0, express_1.Router)();
-const adminOnly = [auth_1.authMiddleware, isAdmin_1.isAdmin];
-// Rotas públicas
-router.post('/register', userController.register); // rota cadastro 
-router.post('/login', userController.login); // rota login
-// Rota privada usuário
-router.get('/profile', auth_1.authMiddleware, userController.profile); // rota privada para visualização dos dados do usuário autenticada com middleware
-router.patch('/:id', auth_1.authMiddleware, userController.updateProfile); // atualizar dados da conta do usuário
-// Rotas privadas de admin
-router.get('/', adminOnly, userController.listAllUsers); // listar usuários cadastrados
-router.get('/:id', adminOnly, userController.getUserById); // listar usuário específico
-router.patch('/:id', adminOnly, userController.updateUserByAdmin); // atualizar dados usuário específico
-router.delete('/:id', adminOnly, userController.deleteUser); // excluir dados usuário
+router.get('/stats/order-summary', auth_1.authMiddleware, isAdmin_1.isAdmin, statsController.getOrderSummary);
 exports.default = router;

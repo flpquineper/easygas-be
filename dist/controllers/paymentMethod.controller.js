@@ -35,7 +35,6 @@ const listPaymentMethods = (_req, res) => __awaiter(void 0, void 0, void 0, func
     }
 });
 exports.listPaymentMethods = listPaymentMethods;
-// Atualizar um método
 const updatePaymentMethod = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const { methodName } = req.body;

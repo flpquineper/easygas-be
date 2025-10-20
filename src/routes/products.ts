@@ -24,9 +24,7 @@ const storage = multer.diskStorage({
     cb(null, `${hash}${ext}`);
   }
 });
-
 const upload = multer({ storage });
-const adminOnly = [authMiddleware, isAdmin];
 
 // Rotas públicas
 router.get('/', listProducts)

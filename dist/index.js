@@ -13,10 +13,27 @@ const orders_1 = __importDefault(require("./routes/orders"));
 const paymentMethods_1 = __importDefault(require("./routes/paymentMethods"));
 const deliveryMans_1 = __importDefault(require("./routes/deliveryMans"));
 const orderStatus_1 = __importDefault(require("./routes/orderStatus"));
+const stats_1 = __importDefault(require("./routes/stats"));
 const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
 const prisma = new client_1.PrismaClient();
-app.use((0, cors_1.default)());
+const allowedOrigins = [
+    'http://localhost:3001',
+    'http://localhost:3000',
+    'https://easygas-ten.vercel.app/',
+    'https://easygas-fe.onrender.com'
+];
+const corsOptions = {
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error('Não permitido pelo CORS'));
+        }
+    }
+};
+app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json());
 app.use('/users', users_1.default);
 app.use('/admins', admins_1.default);
@@ -26,6 +43,7 @@ app.use('/api/orders', orders_1.default);
 app.use('/orderStatus', orderStatus_1.default);
 app.use('/', paymentMethods_1.default);
 app.use('/', deliveryMans_1.default);
+app.use('/', stats_1.default);
 app.get('/', (req, res) => {
     res.send('API EasyGas rodando!');
 });

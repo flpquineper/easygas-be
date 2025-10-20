@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.cancelOrder = exports.updateOrderStatus = exports.getOrder = exports.listOrders = exports.createOrder = void 0;
+exports.listAllOrders = exports.cancelOrder = exports.updateOrderStatus = exports.getOrder = exports.listOrders = exports.createOrder = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -95,7 +95,10 @@ const listOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.listOrders = listOrders;
 const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const { id } = req.params;
+    const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+    const user = req.user;
     try {
         const order = yield prisma.order.findUnique({
             where: { id: Number(id) },
@@ -109,10 +112,14 @@ const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             res.status(404).json({ erro: 'Pedido não encontrado.' });
             return;
         }
+        if (!user.isAdmin && order.userId !== userId) {
+            res.status(403).json({ erro: 'Acesso negado. Este pedido não pertence a você.' });
+            return;
+        }
         res.status(200).json(order);
     }
     catch (error) {
-        res.status(500).json({ erro: 'Erro ao buscar pedido.', detalhes: error });
+        res.status(500).json({ erro: 'Erro ao buscar pedido.' });
     }
 });
 exports.getOrder = getOrder;
@@ -170,3 +177,21 @@ const cancelOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.cancelOrder = cancelOrder;
+const listAllOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const orders = yield prisma.order.findMany({
+            include: {
+                user: { select: { name: true, phone: true } }, // É útil para o admin ver o nome do cliente
+                items: { include: { product: true } },
+                paymentMethod: true,
+                status: true,
+            },
+            orderBy: { orderDate: 'desc' }
+        });
+        res.status(200).json(orders);
+    }
+    catch (error) {
+        res.status(500).json({ erro: 'Erro ao listar todos os pedidos.', detalhes: error });
+    }
+});
+exports.listAllOrders = listAllOrders;

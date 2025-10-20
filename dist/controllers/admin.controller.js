@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.remove = exports.update = exports.profile = exports.login = exports.register = void 0;
+exports.deleteAdmin = exports.getAdminById = exports.listAdmins = exports.remove = exports.update = exports.profile = exports.login = exports.register = void 0;
 const client_1 = require("@prisma/client");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -70,8 +70,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.login = login;
 const profile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    const adminId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+    const adminId = req.user.id;
     if (!adminId) {
         res.status(401).json({ erro: 'Administrador não autenticado.' });
         return;
@@ -120,3 +119,42 @@ const remove = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.remove = remove;
+const listAdmins = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const admins = yield prisma.admin.findMany({
+            select: { id: true, name: true, email: true },
+        });
+        res.status(200).json(admins);
+    }
+    catch (error) {
+        res.status(500).json({ erro: "Erro ao listar administradores." });
+    }
+});
+exports.listAdmins = listAdmins;
+const getAdminById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const admin = yield prisma.admin.findUnique({
+            where: { id: Number(id) },
+            select: { id: true, name: true, email: true },
+        });
+        if (!admin)
+            return res.status(404).json({ erro: "Administrador não encontrado." });
+        res.status(200).json(admin);
+    }
+    catch (error) {
+        res.status(500).json({ erro: "Erro ao buscar administrador." });
+    }
+});
+exports.getAdminById = getAdminById;
+const deleteAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        yield prisma.admin.delete({ where: { id: Number(id) } });
+        res.status(204).send();
+    }
+    catch (error) {
+        res.status(500).json({ erro: "Erro ao remover administrador." });
+    }
+});
+exports.deleteAdmin = deleteAdmin;

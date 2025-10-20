@@ -9,9 +9,12 @@ const crypto_1 = __importDefault(require("crypto"));
 const path_1 = __importDefault(require("path"));
 const product_controller_1 = require("../controllers/product.controller");
 const auth_1 = require("../middlewares/auth");
+const isAdmin_1 = require("../middlewares/isAdmin");
 const router = (0, express_1.Router)();
+const adminOnly = [auth_1.authMiddleware, isAdmin_1.isAdmin];
+// Aqui estamos configurando o multer para salvar arquivos em disco, utilizando o crypto.randomBytes
 const storage = multer_1.default.diskStorage({
-    destination: path_1.default.join(__dirname, 'uploads'),
+    destination: path_1.default.join(__dirname, '..', '..', 'uploads'),
     filename: (req, file, cb) => {
         const hash = crypto_1.default.randomBytes(8).toString('hex');
         const ext = path_1.default.extname(file.originalname);
@@ -19,8 +22,11 @@ const storage = multer_1.default.diskStorage({
     }
 });
 const upload = (0, multer_1.default)({ storage });
-router.post('/', auth_1.authMiddleware, upload.single('image'), product_controller_1.createProduct);
+// Rotas públicas
 router.get('/', product_controller_1.listProducts);
-router.put('/:id', auth_1.authMiddleware, product_controller_1.updateProduct);
-router.delete('/:id', auth_1.authMiddleware, product_controller_1.deleteProduct);
+// Rota protegidas 
+router.get('/:id', adminOnly, product_controller_1.getProductById);
+router.post('/', adminOnly, upload.single('image'), product_controller_1.createProduct);
+router.put('/:id', adminOnly, product_controller_1.updateProduct);
+router.delete('/:id', adminOnly, isAdmin_1.isAdmin, product_controller_1.deleteProduct);
 exports.default = router;
