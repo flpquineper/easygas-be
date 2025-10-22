@@ -105,7 +105,7 @@ model OrderItem {
 
 model OrderStatus {
   id         Int  @id @default(autoincrement())
-  statusName String              
+  statusName String  @unique     
   orders     Order[]
   history    OrderStatusHistory[]
 
@@ -135,9 +135,9 @@ model PaymentMethod {
 
 model DeliveryMan {
   id       Int     @id @default(autoincrement())
-  name     String? 
-  email    String? @unique 
-  password String? 
+  name     String 
+  email    String @unique 
+  password String 
   orders   Order[]
 
   @@map("deliveryMans")
