@@ -10,8 +10,10 @@ import deliveryManRouter from './routes/deliveryMans'
 import orderStatusRouter from './routes/orderStatus'
 import statsRoutes from './routes/stats';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 const app = express();
+app.use(cookieParser());
 const prisma = new PrismaClient();
 
 const allowedOrigins = [
