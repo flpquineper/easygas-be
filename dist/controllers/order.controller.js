@@ -90,7 +90,10 @@ const listOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(200).json(orders);
     }
     catch (error) {
-        res.status(500).json({ erro: 'Erro ao listar pedidos.', detalhes: error });
+        res.status(500).json({
+            erro: 'Erro ao listar todos os pedidos.',
+            detalhes: error.message
+        });
     }
 });
 exports.listOrders = listOrders;
@@ -119,7 +122,10 @@ const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).json(order);
     }
     catch (error) {
-        res.status(500).json({ erro: 'Erro ao buscar pedido.' });
+        res.status(500).json({
+            erro: 'Erro ao listar todos os pedidos.',
+            detalhes: error.message
+        });
     }
 });
 exports.getOrder = getOrder;
@@ -137,7 +143,10 @@ const updateOrderStatus = (req, res) => __awaiter(void 0, void 0, void 0, functi
         res.status(200).json({ mensagem: 'Status atualizado com sucesso.', order });
     }
     catch (error) {
-        res.status(500).json({ erro: 'Erro ao atualizar status do pedido.', detalhes: error });
+        res.status(500).json({
+            erro: 'Erro ao listar todos os pedidos.',
+            detalhes: error.message
+        });
     }
 });
 exports.updateOrderStatus = updateOrderStatus;
@@ -173,7 +182,10 @@ const cancelOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(200).json({ mensagem: 'Pedido cancelado com sucesso.', pedido: updated });
     }
     catch (error) {
-        res.status(500).json({ erro: 'Erro ao cancelar pedido.', detalhes: error });
+        res.status(500).json({
+            erro: 'Erro ao listar todos os pedidos.',
+            detalhes: error.message
+        });
     }
 });
 exports.cancelOrder = cancelOrder;
@@ -191,7 +203,10 @@ const listAllOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         res.status(200).json(orders);
     }
     catch (error) {
-        res.status(500).json({ erro: 'Erro ao listar todos os pedidos.', detalhes: error });
+        res.status(500).json({
+            erro: 'Erro ao listar todos os pedidos.',
+            detalhes: error.message
+        });
     }
 });
 exports.listAllOrders = listAllOrders;
