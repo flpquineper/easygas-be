@@ -13,7 +13,6 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
 const app = express();
-app.use(cookieParser());
 const prisma = new PrismaClient();
 
 const allowedOrigins = [
@@ -30,18 +29,19 @@ const corsOptions: cors.CorsOptions = {
     } else {
       callback(new Error('Não permitido pelo CORS'));
     }
-  }
+  },
+  credentials: true
 };
 
 app.use(cors(corsOptions));
-
+app.use(cookieParser());
 app.use(express.json());
 
 app.use('/users', userRouter);
 app.use('/admins', adminRouter);
 app.use('/api/carts', cartRouter);
 app.use('/products', productRouter);
-app.use('/api/orders', orderRouter);
+app.use('/orders', orderRouter);
 app.use('/orderStatus', orderStatusRouter)
 app.use('/', paymentRouter)
 app.use('/', deliveryManRouter)

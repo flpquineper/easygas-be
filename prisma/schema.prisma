@@ -79,7 +79,7 @@ model Order {
   user            User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   paymentMethod   PaymentMethod        @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
   deliveryMan     DeliveryMan?         @relation(fields: [deliveryManId], references: [id], onDelete: SetNull)
-  status          OrderStatus          @relation(fields: [statusId], references: [id], onDelete: Restrict)
+  status          OrderStatus?          @relation(fields: [statusId], references: [id], onDelete: Restrict)
   items           OrderItem[]
   statusHistory   OrderStatusHistory[]
 
