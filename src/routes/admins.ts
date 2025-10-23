@@ -13,7 +13,7 @@ router.post('/register', adminController.register);
 router.post('/login', adminController.login);
 
 // GET /admins/profile -> Retorna o perfil do admin LOGADO (baseado no token).
-router.get('/profile', authMiddleware, adminController.profile);
+router.get('/profile', adminOnly, adminController.profile);
 
 // GET /admins -> Lista todos os administradores (protegido).
 router.get('/admins', adminOnly, adminController.listAdmins);

@@ -90,8 +90,11 @@ export const listOrders = async (req: AuthenticatedRequest, res: Response): Prom
       orderBy: { orderDate: 'desc' }
     });
     res.status(200).json(orders);
-  } catch (error) {
-    res.status(500).json({ erro: 'Erro ao listar pedidos.', detalhes: error });
+  } catch (error: any) {
+    res.status(500).json({
+      erro: 'Erro ao listar todos os pedidos.',
+      detalhes: error.message
+    });
   }
 };
 
@@ -109,7 +112,7 @@ export const getOrder = async (req: AuthenticatedRequest, res: Response): Promis
         status: true,
       },
     });
-    
+
     if (!order) {
       res.status(404).json({ erro: 'Pedido não encontrado.' });
       return;
@@ -121,8 +124,11 @@ export const getOrder = async (req: AuthenticatedRequest, res: Response): Promis
     }
 
     res.status(200).json(order);
-  } catch (error) {
-    res.status(500).json({ erro: 'Erro ao buscar pedido.' });
+ } catch (error: any) {
+    res.status(500).json({
+      erro: 'Erro ao listar todos os pedidos.',
+      detalhes: error.message
+    });
   }
 };
 
@@ -138,8 +144,11 @@ export const updateOrderStatus = async (req: AuthenticatedRequest, res: Response
       },
     });
     res.status(200).json({ mensagem: 'Status atualizado com sucesso.', order });
-  } catch (error) {
-    res.status(500).json({ erro: 'Erro ao atualizar status do pedido.', detalhes: error });
+  } catch (error: any) {
+    res.status(500).json({
+      erro: 'Erro ao listar todos os pedidos.',
+      detalhes: error.message
+    });
   }
 };
 
@@ -173,8 +182,11 @@ export const cancelOrder = async (req: AuthenticatedRequest, res: Response): Pro
       },
     });
     res.status(200).json({ mensagem: 'Pedido cancelado com sucesso.', pedido: updated });
-  } catch (error) {
-    res.status(500).json({ erro: 'Erro ao cancelar pedido.', detalhes: error });
+  } catch (error: any) {
+    res.status(500).json({
+      erro: 'Erro ao listar todos os pedidos.',
+      detalhes: error.message
+    });
   }
 };
 
@@ -190,7 +202,10 @@ export const listAllOrders = async (req: Request, res: Response): Promise<void> 
       orderBy: { orderDate: 'desc' }
     });
     res.status(200).json(orders);
-  } catch (error) {
-    res.status(500).json({ erro: 'Erro ao listar todos os pedidos.', detalhes: error });
+  } catch (error: any) {
+    res.status(500).json({
+      erro: 'Erro ao listar todos os pedidos.',
+      detalhes: error.message
+    });
   }
 };
