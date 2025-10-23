@@ -7,8 +7,7 @@ exports.authMiddleware = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const JWT_SECRET = process.env.JWT_SECRET || 'easygas_secret_key';
 const authMiddleware = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader === null || authHeader === void 0 ? void 0 : authHeader.split(' ')[1];
+    const { 'easygas.token': token } = req.cookies;
     if (!token) {
         res.status(401).json({ erro: 'Token de acesso não fornecido.' });
         return;
