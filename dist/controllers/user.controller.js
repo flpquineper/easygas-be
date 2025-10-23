@@ -26,7 +26,6 @@ const userPublicData = {
     phone: true,
     address: true,
     complementAddress: true,
-    role: true,
     orders: true,
 };
 const userListSelect = {
@@ -193,8 +192,6 @@ const updateUserByAdmin = (req, res) => __awaiter(void 0, void 0, void 0, functi
         data.address = address;
     if (phone)
         data.phone = phone;
-    if (role)
-        data.role = role;
     try {
         const user = yield prisma.user.update({
             where: { id: Number(id) },
