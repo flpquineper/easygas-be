@@ -16,7 +16,6 @@ const userPublicData = {
   phone: true,
   address: true,
   complementAddress: true,
-  role: true,
   orders: true,
 };
 
@@ -190,7 +189,6 @@ export const updateUserByAdmin = async (req: Request, res: Response) => {
   if (cpf) data.cpf = cpf;
   if (address) data.address = address;
   if (phone) data.phone = phone;
-  if (role) data.role = role;
 
   try {
     const user = await prisma.user.update({

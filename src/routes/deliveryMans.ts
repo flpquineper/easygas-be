@@ -16,14 +16,14 @@ const router = Router();
 const adminOnly = [authMiddleware, isAdmin];
 
 // Rotas públicas
-router.post('/deliveryman/login', loginDeliveryMan);
+router.post('/deliverymen/login', loginDeliveryMan);
 
 // Rota privada entregador
-router.get('/deliveryman/profile', authMiddleware, profileDeliveryMan);
+router.get('/deliverymen/profile', authMiddleware, profileDeliveryMan);
 
 
 // Rotas privadas admin
-router.post('/deliveryman/register', adminOnly, registerDeliveryMan);
+router.post('/deliverymen/register', adminOnly, registerDeliveryMan);
 router.get('/deliverymen', adminOnly, listDeliveryMen);
 router.get('/deliverymen/:id', adminOnly, getDeliveryManById);
 router.put('/deliverymen/:id', adminOnly, updateDeliveryMan);
