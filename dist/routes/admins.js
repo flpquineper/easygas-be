@@ -44,7 +44,7 @@ router.post('/register', adminController.register);
 // POST /admins/login -> Autentica um admin e retorna um token.
 router.post('/login', adminController.login);
 // GET /admins/profile -> Retorna o perfil do admin LOGADO (baseado no token).
-router.get('/profile', auth_1.authMiddleware, adminController.profile);
+router.get('/profile', adminOnly, adminController.profile);
 // GET /admins -> Lista todos os administradores (protegido).
 router.get('/admins', adminOnly, adminController.listAdmins);
 // GET /admins/:id -> Busca um administrador específico (protegido).

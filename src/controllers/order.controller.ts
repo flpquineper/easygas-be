@@ -163,7 +163,7 @@ export const cancelOrder = async (req: AuthenticatedRequest, res: Response): Pro
       res.status(404).json({ erro: 'Pedido não encontrado.' });
       return;
     }
-    if (order.status.statusName.toLowerCase() === 'entregue') {
+    if (order.status && order.status.statusName.toLowerCase() === 'entregue') {
       res.status(400).json({ erro: 'Pedido já entregue, não pode ser cancelado.' });
       return;
     }
