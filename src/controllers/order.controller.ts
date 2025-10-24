@@ -110,6 +110,21 @@ export const getOrder = async (req: AuthenticatedRequest, res: Response): Promis
         items: { include: { product: true } },
         paymentMethod: true,
         status: true,
+        
+        user: { 
+          select: { 
+            name: true, 
+            phone: true,
+            address: true, 
+            complementAddress: true
+          }
+        },
+        deliveryMan: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
       },
     });
 
@@ -118,7 +133,7 @@ export const getOrder = async (req: AuthenticatedRequest, res: Response): Promis
       return;
     }
 
-    if (!user.isAdmin && order.userId !== userId) {
+    if (user.role !== 'admin' && order.userId !== userId) {
       res.status(403).json({ erro: 'Acesso negado. Este pedido não pertence a você.' });
       return;
     }
@@ -207,5 +222,24 @@ export const listAllOrders = async (req: Request, res: Response): Promise<void> 
       erro: 'Erro ao listar todos os pedidos.',
       detalhes: error.message
     });
+  }
+};
+
+export const assignDeliveryMan = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  const { id } = req.params;
+  const { deliveryManId } = req.body; 
+
+  const deliveryId = deliveryManId ? Number(deliveryManId) : null;
+
+  try {
+    const updatedOrder = await prisma.order.update({
+      where: { id: Number(id) },
+      data: {
+        deliveryManId: deliveryId,
+      },
+    });
+    res.status(200).json({ mensagem: 'Entregador atribuído com sucesso.', order: updatedOrder });
+  } catch (error: any) {
+    res.status(500).json({ erro: 'Erro ao atribuir entregador.', detalhes: error.message });
   }
 };
