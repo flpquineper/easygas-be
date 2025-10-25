@@ -1,3 +1,4 @@
+// src/controllers/admin.controller.ts
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
@@ -56,21 +57,29 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       { expiresIn: '7d' }
     );
 
+    res.cookie('easygas.token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      path: '/', 
+      maxAge: 1000 * 60 * 60 * 24 * 7
+    });
+
     res.status(200).json({
-      token,
       admin: {
         id: admin.id,
         name: admin.name,
         email: admin.email
       }
     });
+
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao fazer login de administrador.', detalhes: error });
   }
 };
 
 export const profile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
- const adminId = (req.user as { id: number }).id;
+  const adminId = (req.user as { id: number }).id;
 
   if (!adminId) {
     res.status(401).json({ erro: 'Administrador não autenticado.' });

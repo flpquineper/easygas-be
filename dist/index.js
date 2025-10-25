@@ -22,7 +22,8 @@ const allowedOrigins = [
     'http://localhost:3001',
     'http://localhost:3000',
     'https://easygas-ten.vercel.app/',
-    'https://easygas-fe.onrender.com'
+    'https://easygas.onrender.com',
+    'https://easygas-admin.onrender.com'
 ];
 const corsOptions = {
     origin: (origin, callback) => {
