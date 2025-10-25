@@ -1,3 +1,4 @@
+// src/controllers/user.controller.ts
 import { Request, Response } from 'express';
 import { PrismaClient, Prisma } from '@prisma/client';
 import bcrypt from 'bcrypt';
@@ -100,8 +101,15 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
 
+    res.cookie('easygas.token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      path: '/',
+      maxAge: 1000 * 60 * 60 * 24 * 7
+    });
+
     res.status(200).json({
-      token,
       user: {
         id: user.id,
         name: user.name,
@@ -111,6 +119,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         complementAddress: user.complementAddress,
       }
     });
+
   } catch (error) {
     console.error("Erro no login:", error);
     res.status(500).json({ erro: 'Erro ao fazer login.' });
@@ -236,7 +245,7 @@ export const deleteUser = async (req: Request, res: Response) => {
     await prisma.user.delete({
       where: { id: Number(id) }
     });
-    res.status(204).send(); 
+    res.status(204).send();
   } catch (error) {
     res.status(400).json(error);
   }

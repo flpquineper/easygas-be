@@ -1,3 +1,4 @@
+// src/index.ts
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import userRouter from './routes/users';
@@ -13,12 +14,10 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
 const app = express();
-const prisma = new PrismaClient();
 
 const allowedOrigins = [
   'http://localhost:3001',
   'http://localhost:3000', 
-  'https://easygas-ten.vercel.app/' ,
   'https://easygas.onrender.com',
   'https://easygas-admin.onrender.com'
 ];
@@ -34,8 +33,21 @@ const corsOptions: cors.CorsOptions = {
   credentials: true
 };
 
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
+app.use((req, res, next) => {
+  console.log('--- NOVA REQUISIÇÃO ---');
+  console.log('Origem:', req.headers.origin);
+  console.log('Cookies ANTES do parser:', req.headers.cookie);
+  next();
+});
 app.use(cookieParser());
+app.use((req, res, next) => {
+  console.log('Cookies DEPOIS do parser:', req.cookies);
+  next();
+});
 app.use(express.json());
 
 app.use('/users', userRouter);
