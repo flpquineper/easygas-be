@@ -42,6 +42,7 @@ const adminOnly = [auth_1.authMiddleware, isAdmin_1.isAdmin];
 // Rotas públicas
 router.post('/register', userController.register); // rota cadastro 
 router.post('/login', userController.login); // rota login
+router.post('/logout', userController.logout); // rota logout
 // Rota privada usuário
 router.get('/profile', auth_1.authMiddleware, userController.profile); // rota privada para visualização dos dados do usuário autenticada com middleware
 router.patch('/:id', auth_1.authMiddleware, userController.updateProfile); // atualizar dados da conta do usuário

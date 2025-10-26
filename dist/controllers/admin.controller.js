@@ -16,8 +16,8 @@ exports.deleteAdmin = exports.getAdminById = exports.listAdmins = exports.remove
 const client_1 = require("@prisma/client");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const jwt_1 = __importDefault(require("../config/jwt"));
 const prisma = new client_1.PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'easygas_secret_key';
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, email, password } = req.body;
     try {
@@ -54,7 +54,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             id: admin.id,
             email: admin.email,
             role: 'admin'
-        }, JWT_SECRET, { expiresIn: '7d' });
+        }, jwt_1.default, { expiresIn: '7d' });
         res.cookie('easygas.token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
