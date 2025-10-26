@@ -3,9 +3,9 @@ import { Request, Response } from 'express';
 import { PrismaClient, Prisma } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import JWT_SECRET from '../config/jwt';
 
 const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'easygas_secret_key';
 interface AuthenticatedRequest extends Request {
   user?: string | JwtPayload;
 }
@@ -124,6 +124,17 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     console.error("Erro no login:", error);
     res.status(500).json({ erro: 'Erro ao fazer login.' });
   }
+};
+
+export const logout = (req: Request, res: Response): void => {
+  res.cookie('easygas.token', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    path: '/',
+    expires: new Date(0),
+  });
+  res.status(200).json({ message: 'Logout realizado com sucesso.' });
 };
 
 export const profile = async (req: AuthenticatedRequest, res: Response): Promise<void> => {

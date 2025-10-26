@@ -4,9 +4,10 @@ import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { AuthenticatedRequest } from '../middlewares/auth';
+import JWT_SECRET from '../config/jwt';
 
 const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'easygas_secret_key';
+
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   const { name, email, password } = req.body;

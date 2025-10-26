@@ -15,10 +15,10 @@ const prisma = new client_1.PrismaClient();
 const getOrderSummary = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const pendingCount = yield prisma.order.count({
-            where: { status: { statusName: 'Pendente' } }
+            where: { statusId: 1 }
         });
         const deliveredCount = yield prisma.order.count({
-            where: { status: { statusName: 'Entregue' } }
+            where: { statusId: 2 }
         });
         res.status(200).json({
             pending: pendingCount,
