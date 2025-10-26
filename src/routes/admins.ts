@@ -12,6 +12,9 @@ router.post('/register', adminController.register);
 // POST /admins/login -> Autentica um admin e retorna um token.
 router.post('/login', adminController.login);
 
+// POST /admins/logout -> Encerra a sessão do admin.
+router.post('/logout', adminController.logout);
+
 // GET /admins/profile -> Retorna o perfil do admin LOGADO (baseado no token).
 router.get('/profile', adminOnly, adminController.profile);
 
