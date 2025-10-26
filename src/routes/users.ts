@@ -9,6 +9,7 @@ const adminOnly = [authMiddleware, isAdmin];
 // Rotas públicas
 router.post('/register', userController.register); // rota cadastro 
 router.post('/login', userController.login); // rota login
+router.post('/logout', userController.logout); // rota logout
 
 
 // Rota privada usuário

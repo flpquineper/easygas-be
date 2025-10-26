@@ -12,12 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.updateProfile = exports.updateUserByAdmin = exports.getUserById = exports.listAllUsers = exports.profile = exports.login = exports.register = void 0;
+exports.deleteUser = exports.updateProfile = exports.updateUserByAdmin = exports.getUserById = exports.listAllUsers = exports.profile = exports.logout = exports.login = exports.register = void 0;
 const client_1 = require("@prisma/client");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const jwt_1 = __importDefault(require("../config/jwt"));
 const prisma = new client_1.PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'easygas_secret_key';
 const userPublicData = {
     id: true,
     name: true,
@@ -94,7 +94,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             res.status(400).json({ erro: mensagemPadrao });
             return;
         }
-        const token = jsonwebtoken_1.default.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+        const token = jsonwebtoken_1.default.sign({ id: user.id, email: user.email }, jwt_1.default, { expiresIn: '7d' });
         res.cookie('easygas.token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -119,6 +119,17 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.login = login;
+const logout = (req, res) => {
+    res.cookie('easygas.token', '', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        path: '/',
+        expires: new Date(0),
+    });
+    res.status(200).json({ message: 'Logout realizado com sucesso.' });
+};
+exports.logout = logout;
 const profile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
