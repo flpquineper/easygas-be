@@ -33,21 +33,11 @@ const corsOptions: cors.CorsOptions = {
   credentials: true
 };
 
+app.use(cookieParser());
 app.use(cors({
   origin: allowedOrigins,
   credentials: true
 }));
-app.use((req, res, next) => {
-  console.log('--- NOVA REQUISIÇÃO ---');
-  console.log('Origem:', req.headers.origin);
-  console.log('Cookies ANTES do parser:', req.headers.cookie);
-  next();
-});
-app.use(cookieParser());
-app.use((req, res, next) => {
-  console.log('Cookies DEPOIS do parser:', req.cookies);
-  next();
-});
 app.use(express.json());
 
 app.use('/users', userRouter);
