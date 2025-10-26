@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listAllOrders = exports.cancelOrder = exports.updateOrderStatus = exports.getOrder = exports.listOrders = exports.createOrder = void 0;
+exports.assignDeliveryMan = exports.listAllOrders = exports.cancelOrder = exports.updateOrderStatus = exports.getOrder = exports.listOrders = exports.createOrder = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -109,13 +109,27 @@ const getOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 items: { include: { product: true } },
                 paymentMethod: true,
                 status: true,
+                user: {
+                    select: {
+                        name: true,
+                        phone: true,
+                        address: true,
+                        complementAddress: true
+                    }
+                },
+                deliveryMan: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
             },
         });
         if (!order) {
             res.status(404).json({ erro: 'Pedido não encontrado.' });
             return;
         }
-        if (!user.isAdmin && order.userId !== userId) {
+        if (user.role !== 'admin' && order.userId !== userId) {
             res.status(403).json({ erro: 'Acesso negado. Este pedido não pertence a você.' });
             return;
         }
@@ -161,7 +175,7 @@ const cancelOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             res.status(404).json({ erro: 'Pedido não encontrado.' });
             return;
         }
-        if (order.status.statusName.toLowerCase() === 'entregue') {
+        if (order.status && order.status.statusName.toLowerCase() === 'entregue') {
             res.status(400).json({ erro: 'Pedido já entregue, não pode ser cancelado.' });
             return;
         }
@@ -210,3 +224,21 @@ const listAllOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.listAllOrders = listAllOrders;
+const assignDeliveryMan = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const { deliveryManId } = req.body;
+    const deliveryId = deliveryManId ? Number(deliveryManId) : null;
+    try {
+        const updatedOrder = yield prisma.order.update({
+            where: { id: Number(id) },
+            data: {
+                deliveryManId: deliveryId,
+            },
+        });
+        res.status(200).json({ mensagem: 'Entregador atribuído com sucesso.', order: updatedOrder });
+    }
+    catch (error) {
+        res.status(500).json({ erro: 'Erro ao atribuir entregador.', detalhes: error.message });
+    }
+});
+exports.assignDeliveryMan = assignDeliveryMan;

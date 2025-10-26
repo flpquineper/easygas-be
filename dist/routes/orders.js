@@ -10,6 +10,7 @@ const adminOnly = [auth_1.authMiddleware, isAdmin_1.isAdmin];
 router.get('/all', adminOnly, order_controller_1.listAllOrders);
 router.patch('/:id/status', adminOnly, order_controller_1.updateOrderStatus);
 router.patch('/:id/cancel', adminOnly, order_controller_1.cancelOrder);
+router.patch('/:id/assign-delivery', adminOnly, order_controller_1.assignDeliveryMan);
 // rotas privadas user
 router.get('/', auth_1.authMiddleware, order_controller_1.listOrders);
 router.post('/', auth_1.authMiddleware, order_controller_1.createOrder);

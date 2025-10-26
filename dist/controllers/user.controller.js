@@ -95,8 +95,14 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return;
         }
         const token = jsonwebtoken_1.default.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+        res.cookie('easygas.token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            path: '/',
+            maxAge: 1000 * 60 * 60 * 24 * 7
+        });
         res.status(200).json({
-            token,
             user: {
                 id: user.id,
                 name: user.name,
