@@ -14,7 +14,7 @@ export const getOrderSummary = async (req: Request, res: Response) => {
       where: { statusName: "Entregue" },
     });
 
-    // Se algum não existir, retorna zero
+    // Contagem de pedidos
     const receivedCount = receivedStatus
       ? await prisma.order.count({
           where: { statusId: receivedStatus.id },
@@ -27,13 +27,22 @@ export const getOrderSummary = async (req: Request, res: Response) => {
         })
       : 0;
 
+    // Novas contagens para os cards adicionais
+    const customersCount = await prisma.user.count();
+    const driversCount = await prisma.deliveryMan.count();
+    const productsCount = await prisma.product.count();
+
     // Retornar o JSON no formato que o frontend espera
     res.status(200).json({
       received: receivedCount,
       delivered: deliveredCount,
+      customers: customersCount,
+      drivers: driversCount,
+      products: productsCount,
     });
   } catch (error) {
     console.error("Erro ao buscar resumo de pedidos:", error);
     res.status(500).json({ error: "Erro ao buscar resumo de pedidos." });
   }
 };
+ 
