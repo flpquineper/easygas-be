@@ -2,25 +2,38 @@ import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const PENDING_STATUS_ID = 1; 
-const DELIVERED_STATUS_ID = 2; 
 
 export const getOrderSummary = async (req: Request, res: Response) => {
   try {
-    const pendingCount = await prisma.order.count({
-      where: { statusId: PENDING_STATUS_ID }
+    // Buscar os status diretamente pelo nome
+    const receivedStatus = await prisma.orderStatus.findUnique({
+      where: { statusName: "Recebido" },
     });
 
-    const deliveredCount = await prisma.order.count({
-      where: { statusId: DELIVERED_STATUS_ID }
+    const deliveredStatus = await prisma.orderStatus.findUnique({
+      where: { statusName: "Entregue" },
     });
 
+    // Se algum não existir, retorna zero
+    const receivedCount = receivedStatus
+      ? await prisma.order.count({
+          where: { statusId: receivedStatus.id },
+        })
+      : 0;
+
+    const deliveredCount = deliveredStatus
+      ? await prisma.order.count({
+          where: { statusId: deliveredStatus.id },
+        })
+      : 0;
+
+    // Retornar o JSON no formato que o frontend espera
     res.status(200).json({
-      pending: pendingCount,
+      received: receivedCount,
       delivered: deliveredCount,
     });
-
   } catch (error) {
+    console.error("Erro ao buscar resumo de pedidos:", error);
     res.status(500).json({ error: "Erro ao buscar resumo de pedidos." });
   }
 };
